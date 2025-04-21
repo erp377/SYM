@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SYM的专属空间</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .login-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 182, 193, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        input {
+            display: block;
+            margin: 15px auto;
+            padding: 10px;
+            border: 2px solid #ff69b4;
+            border-radius: 10px;
+            width: 200px;
+        }
+
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff1493;
+        }
+
+        .question-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 215, 0, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 1000;
+        }
+
+        .heart {
+            position: fixed;
+            font-size: 0;
+            animation: heartDance 10s ease-out forwards;
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        @keyframes heartDance {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.2) rotate(720deg);
+            }
+        }
+
+          .barrage {
+            position: fixed;
+            font-size: 32px;
+            font-weight: 900;
+            white-space: nowrap;
+            pointer-events: none;
+            animation: barrageMove 10s linear forwards;
+            opacity: 0.9;
+            text-shadow:
+                2px 2px 4px rgba(0,0,0,0.3),
+                0 0 10px rgba(255,255,255,0.5);
+            transform: translateX(100vw);
+            padding: 8px 15px;
+            border-radius: 50px;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes barrageMove {
+            to {
+                transform: translateX(-100%);
+                opacity: 0.2;
+            }
+        }
+        @keyframes barrageMove {
+            0% {
+                transform: translateX(calc(100vw + 50%)) translateZ(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(-100% - 100vw)) translateZ(0);
+                opacity: 0.2;
+            }
+        }
+
+        .barrage {
+            left: -1000px; /* 初始隐藏位置 */
+            will-change: transform;
+            box-sizing: content-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-modal">
+        <h2>孙语慕的梦幻乐园🎠</h2>
+        <input type="text" id="username" placeholder="请输入通行证">
+        <input type="password" id="password" placeholder="请输入魔法咒语">
+        <button onclick="checkLogin()">开启奇迹</button>
+    </div>
+
+    <div class="question-modal">
+        <h3>输入你的主题色🎨</h3>
+        <input type="text" id="color" placeholder="例如：金色 或 #FFD700">
+        <button onclick="startShow()">启动魔法</button>
+    </div>
+
+    <script>
+        function checkLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'sym' && password === '20050108') {
+                alert('验证通过，欢迎小仙女！');
+                document.querySelector('.login-modal').style.display = 'none';
+                document.querySelector('.question-modal').style.display = 'block';
+            } else {
+                alert('密码好像被小精灵藏起来了呢～');
+            }
+        }
+
+        function startShow() {
+            const color = document.getElementById('color').value;
+            document.body.style.background = `radial-gradient(circle, ${color} 10%, #ffffff 100%)`;
+
+            createHearts(color);
+            createBarrage();
+
+            setTimeout(() => {
+                document.querySelectorAll('.heart, .barrage').forEach(el => el.remove());
+            }, 10000);
+        }
+
+        function createHearts(baseColor) {
+            const emojis = ['❤️', '💖', '💝', '💗', '💓','🩷','🧡','❤️‍🔥','🍬','🍭','🧁'];
+            const angles = [-45, 0, 45, 90];
+
+            for (let i = 0; i < 99; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                heart.style.color = randomizeColor(baseColor);
+                heart.style.fontSize = `${40 + Math.random() * 40}px`;
+
+                // 随机起始位置
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                heart.style.left = `${startX}%`;
+                heart.style.top = `${startY}%`;
+
+                // 随机运动参数
+                const moveX = (Math.random() - 0.5) * 200;
+                const moveY = (Math.random() - 0.5) * 200;
+                const rotate = angles[Math.floor(Math.random() * angles.length)];
+
+                heart.style.animation = `
+                    heartDance 10s
+                    cubic-bezier(${Math.random().toFixed(2)},${Math.random().toFixed(2)},${Math.random().toFixed(2)},${Math.random().toFixed(2)})
+                    ${Math.random() * 2}s forwards
+                `;
+                heart.style.setProperty('--moveX', `${moveX}%`);
+                heart.style.setProperty('--moveY', `${moveY}%`);
+                heart.style.setProperty('--rotate', `${rotate}deg`);
+
+                document.body.appendChild(heart);
+            }
+
+            // 添加动态关键帧
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes heartDance {
+                    0% {
+                        transform: translate(0, 0) scale(1) rotate(0);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate(var(--moveX), var(--moveY))
+                                   scale(0.2)
+                                   rotate(var(--rotate));
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function randomizeColor(base) {
+            if (base.startsWith('#')) {
+                const variance = 30;
+                const r = Math.min(255, parseInt(base.substr(1,2), 16) + (Math.random()*variance*2 - variance));
+                const g = Math.min(255, parseInt(base.substr(3,2), 16) + (Math.random()*variance*2 - variance));
+                const b = Math.min(255, parseInt(base.substr(5,2), 16) + (Math.random()*variance*2 - variance));
+                return `rgb(${r},${g},${b})`;
+            }
+            return base;
+        }
+
+        function createBarrage() {
+            const texts = [
+                '孙语慕是全银河系最棒最棒的小女孩🌠',
+                '孙语慕能量充满整个宇宙💫',
+                '没有什么是孙语慕做不到的🌌',
+                '世界因孙语慕而增加闪光点🎆',
+                '今天也要释放孙语慕的独特光芒✨',
+                '孙语慕是奇迹的化身🎇'
+            ];
+
+            // 轨道系统控制
+            const trackCount = 12; // 垂直轨道数量
+            const trackHeight = window.innerHeight / trackCount;
+            const usedTracks = new Set();
+
+            // 动态字体尺寸范围
+            const minFontSize = 28;
+            const maxFontSize = 48;
+
+            for (let i = 0; i < 36; i++) {
+                const barrage = document.createElement('div');
+                barrage.className = 'barrage';
+                barrage.textContent = texts[Math.floor(Math.random() * texts.length)];
+
+                // 轨道分配系统
+                let track;
+                do {
+                    track = Math.floor(Math.random() * trackCount);
+                } while(usedTracks.has(track));
+                usedTracks.add(track);
+                if(usedTracks.size >= trackCount/1.5) usedTracks.clear();
+
+                // 动态位置计算
+                const baseY = track * trackHeight;
+                const offsetY = Math.random() * trackHeight * 0.6;
+                barrage.style.top = `${baseY + offsetY}px`;
+
+                // 视觉增强
+                barrage.style.fontSize = `${minFontSize + Math.random()*(maxFontSize-minFontSize)}px`;
+                barrage.style.animationDuration = `${8 + Math.random()*6}s`;
+                barrage.style.animationDelay = `${Math.random()*3}s`;
+
+                // 霓虹灯效果
+                const hue = Math.random() * 360;
+                barrage.style.color = `hsl(${hue}, 80%, 60%)`;
+                barrage.style.background = `linear-gradient(
+                    to right,
+                    hsla(${hue}, 80%, 50%, 0.2),
+                    hsla(${(hue+30)%360}, 90%, 60%, 0.3)
+                )`;
+
+                // 3D效果
+                barrage.style.transform += ` perspective(500px) rotateY(${Math.random()*15-7}deg)`;
+
+                document.body.appendChild(barrage);
+                 // 在添加到DOM后计算宽度
+                document.body.appendChild(barrage);
+
+                // 动态设置起始位置
+                const textWidth = barrage.offsetWidth;
+                barrage.style.left = `${window.innerWidth + 100}px`;
+
+                // 动态设置动画参数
+                barrage.style.animation = `
+                    barrageMove ${10 + textWidth / 100}s
+                    cubic-bezier(0.25,0.1,0.25,1)
+                    ${Math.random() * 3}s forwards
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
